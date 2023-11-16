@@ -91,7 +91,7 @@ RUN code-server --install-extension aaron-bond.better-comments
 USER root
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-RUN sudo apt-get install -s caffe-cpu
+RUN  sudo apt-get update && sudo apt-get install -s caffe-cpu
 USER jovyan
 
 RUN npm install pm2@latest -g
