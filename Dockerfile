@@ -1,14 +1,13 @@
-FROM jupyter/scipy-notebook
+FROM  pytorch/pytorch
 
 
 USER root
 
 
-RUN apt-get update && \
+RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    apt-get update && \
     apt-get install -y vim git zsh tmux wget curl mosh build-essential htop gfortran libatlas-base-dev python3-dev python3-pip silversearcher-ag fd-find
-
-
-USER jovyan
 
 USER jovyan
 WORKDIR $HOME
@@ -67,7 +66,6 @@ RUN code-server --install-extension gengjiawen.vim
 RUN code-server --install-extension tabnine.tabnine-vscode
 RUN code-server --install-extension oderwat.indent-rainbow
 RUN code-server --install-extension christian-kohler.path-intellisense
-
 RUN npm config set registry https://registry.npm.taobao.org && npm install -g cloudcmd gritty
 
 USER root
@@ -91,7 +89,7 @@ RUN code-server --install-extension aaron-bond.better-comments
 USER root
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-# RUN  sudo apt-get update && sudo apt-get install -s caffe-cpu
+# RUN sudo apt-get install -s caffe-cpu
 USER jovyan
 
 RUN npm install pm2@latest -g
