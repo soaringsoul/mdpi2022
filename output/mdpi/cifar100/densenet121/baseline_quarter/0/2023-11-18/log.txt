@@ -1,0 +1,30 @@
+PARAM gpu <- True
+PARAM net <- densenet121-quarter
+PARAM warm <- 2
+{'$checkpoint_path': 'CHECKPOINT_PATH',
+ 'name': 'cifar100/densenet121/baseline_quarter/0',
+ 'qsparse_parameters': [],
+ 'task_parameters': {'gpu': True, 'net': 'densenet121-quarter', 'warm': 2}}
+Files already downloaded and verified
+Files already downloaded and verified
+Traceback (most recent call last):
+  File "/home/jovyan/classification/train.py", line 178, in <module>
+    net = get_network(args)
+          ^^^^^^^^^^^^^^^^^
+  File "/home/jovyan/classification/utils.py", line 247, in get_network
+    net = net.cuda()
+          ^^^^^^^^^^
+  File "/opt/conda/lib/python3.11/site-packages/torch/nn/modules/module.py", line 918, in cuda
+    return self._apply(lambda t: t.cuda(device))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.11/site-packages/torch/nn/modules/module.py", line 810, in _apply
+    module._apply(fn)
+  File "/opt/conda/lib/python3.11/site-packages/torch/nn/modules/module.py", line 833, in _apply
+    param_applied = fn(param)
+                    ^^^^^^^^^
+  File "/opt/conda/lib/python3.11/site-packages/torch/nn/modules/module.py", line 918, in <lambda>
+    return self._apply(lambda t: t.cuda(device))
+                                 ^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.11/site-packages/torch/cuda/__init__.py", line 298, in _lazy_init
+    torch._C._cuda_init()
+RuntimeError: Found no NVIDIA driver on your system. Please check that you have an NVIDIA GPU and installed a driver from http://www.nvidia.com/Download/index.aspx

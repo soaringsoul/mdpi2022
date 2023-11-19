@@ -2,23 +2,16 @@ FROM jupyter/scipy-notebook
 
 
 USER root
-
-
 RUN apt-get update && \
-    apt-get install -y vim git zsh tmux wget curl mosh build-essential htop gfortran libatlas-base-dev python3-dev python3-pip silversearcher-ag fd-find
-
-
-USER jovyan
-
+    apt install vim git zsh tmux wget curl mosh build-essential htop gfortran libatlas-base-dev python3-dev python3-pip silversearcher-ag fd-find -y 
 USER jovyan
 WORKDIR $HOME
 
 RUN wget -q https://gitlab.nrp-nautilus.io/zxy/software_files/-/raw/main/ILOG_COS_20.10_CPLEX_LINUX_X86_64.bin
 RUN echo -ne "2\n\n\n\n\n\n1\n/home/jovyan/.local/CPLEX\nY\n2\n\n\n\n2\n2\n2\n2\n2\n2\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" | bash ./ILOG_COS_20.10_CPLEX_LINUX_X86_64.bin
+RUN python3.8 /home/jovyan/.local/CPLEX/python/setup.py install --user
 
-# 使用阿里云镜像源安装 CPLEX Python 包
-RUN pip3 install -i https://mirrors.aliyun.com/pypi/simple/ cplex cvxopt cvxpy
-
+RUN python3.8 -m pip install cvxopt cvxpy
 
 RUN sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)" "" --unattended
 
@@ -30,18 +23,19 @@ RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && \
 
 RUN git clone https://github.com/gpakosz/.tmux.git && \
     ln -s -f .tmux/.tmux.conf && \
-    cp .tmux/.tmux.conf.local .
+    cp .tmux/.tmux.conf.local .  
 
-# 使用阿里云镜像源安装所需的 Python 包
-RUN pip3 install -U torch torchvision torchaudio --extra-index-url https://mirrors.aliyun.com/pypi/simple/
+RUN python3.8 -m pip install -U torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu113 && \
+    python3.8 -m pip install awscli ninja black fire autopep8 absl-py flake8 tensorboardX smart-open wheel tensorboard jstyleson pytorch-gan-metrics imageio  opencv-python range-key-dict DingtalkChatbot  scikit-learn jupyterlab && \
+    python3.8 -m  ipykernel install --name "python3.8" --user && \
+    pip install awscli ninja && \
+    python3.8 -m pip install numpy matplotlib pudb PyYAML tqdm protobuf bpython ipdb h5py coloredlogs web-pdb runstats
 
-RUN pip3 install awscli ninja black fire autopep8 absl-py flake8 tensorboardX smart-open wheel tensorboard jstyleson pytorch-gan-metrics imageio opencv-python range-key-dict DingtalkChatbot scikit-learn jupyterlab  ipykernel numpy matplotlib pudb PyYAML tqdm protobuf bpython ipdb h5py coloredlogs web-pdb runstats -i https://mirrors.aliyun.com/pypi/simple/
+RUN python3.8 -m pip install numba seaborn networkx "holoviews[recommended]" ipywidgets
 
-# 使用阿里云镜像源安装所需的 Python 包
-RUN pip3 install numba seaborn networkx "holoviews[recommended]" ipywidgets -i https://mirrors.aliyun.com/pypi/simple/ && \
-    pip3 install git+https://github.com/mlzxy/visjs2jupyter@main
+RUN python3.8 -m pip install git+https://github.com/mlzxy/visjs2jupyter@main 
 
-RUN MAKEFLAGS="-j4" pip3  install scipy -i https://mirrors.aliyun.com/pypi/simple/
+RUN MAKEFLAGS="-j4" python3.8 -m pip install scipy==1.1.0
 
 RUN wget https://github.com/prasmussen/gdrive/releases/download/2.1.1/gdrive_2.1.1_linux_386.tar.gz && \
     tar xvf gdrive_2.1.1_linux_386.tar.gz
@@ -68,16 +62,17 @@ RUN code-server --install-extension tabnine.tabnine-vscode
 RUN code-server --install-extension oderwat.indent-rainbow
 RUN code-server --install-extension christian-kohler.path-intellisense
 
-RUN npm config set registry https://registry.npm.taobao.org && npm install -g cloudcmd gritty
+RUN npm install -g cloudcmd gritty
 
 USER root
 RUN apt install screen -y 
 USER jovyan
 
-RUN pip3 install ps-mem  xlsxwriter tinydb torchinfo hvplot dominate protobuf==3.20.1 -i https://mirrors.aliyun.com/pypi/simple/
-
+RUN pip install ps-mem
+RUN python3.8 -m pip install xlsxwriter
 RUN code-server --install-extension cweijan.vscode-office
 
+RUN python3.8 -m pip install tinydb torchinfo hvplot
 
 USER root
 RUN apt install texlive-latex-extra texlive-fonts-recommended dvipng cm-super -y 
@@ -85,13 +80,15 @@ USER jovyan
 
 
 RUN code-server --install-extension aaron-bond.better-comments
-
+RUN  python3.8 -m pip install protobuf==3.20.1
+RUN python3.8 -m pip install dominate
 
 
 USER root
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-# RUN  sudo apt-get update && sudo apt-get install -s caffe-cpu
+RUN  apt install caffe-cpu -y
 USER jovyan
 
 RUN npm install pm2@latest -g
+
+
